@@ -10,3 +10,5 @@ RHSoperator.cpp"
 mpic++ -g -O3 -D_DOUBLE_ $SOURCE_FILES -Iincludes -o double.p
 
 mpic++ -g -O3 $SOURCE_FILES -Iincludes -o single.p
+
+mpic++ -g -O0 -fno-inline comparisonVector.cpp -Iincludes -o comparisonVector.p
