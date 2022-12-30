@@ -48,7 +48,7 @@ int main(int narg, char **argv)
     }
   }
   Wtimes = MPI_Wtime() - Wtimes;
-  cout << tmp << " Accesses DataStruct " << Wtimes << " s." << endl;
+  cout << tmp << " Accesses DataStruct " << Wtimes << " s. ";
 
   // measure accesses std::vector
   tmp = 0;
