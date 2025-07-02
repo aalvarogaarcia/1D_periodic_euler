@@ -1,7 +1,4 @@
 #include "FluxFunctions.h"
-#ifndef __FLUXFUNCTIONS_H__
-#define __FLUXFUNCTIONS_H__
-
 #include "DataStructs.h"
 
 template<class T>
@@ -19,25 +16,11 @@ LinearFlux<T>::LinearFlux()
 };
 
 
-
+template<class T>
+EulerFlux<T>::EulerFlux(T g) : gamma(g) {}
 
 template<class T>
-class EulerFlux
-{
-	private:
-		const T gamma; //Ratio de calores especifico
-	public:
-		//Constructor
-		EulerFlux(T g) : gamma(g) {};
-		//Destructor
-		~EulerFlux(){};
-		void computeFlux(const DataStruct<T> &rho,
-                         	const DataStruct<T> &rho_u,
-                         	const DataStruct<T> &rho_E,
-                         	DataStruct<T> &f_rho,
-                         	DataStruct<T> &f_rho_u,
-                         	DataStruct<T> &f_rho_E);
-};
+EulerFlux<T>::~EulerFlux() {}
 
 
 
@@ -122,3 +105,4 @@ template class LinearFlux<double>;
 
 template class EulerFlux<float>;
 template class EulerFlux<double>;
+

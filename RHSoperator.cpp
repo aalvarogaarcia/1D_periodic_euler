@@ -80,26 +80,6 @@ DataStruct<T>& Central1D<T>::ref2RHS()
 }
 */
 
-// ***DECLARACION DE LA CLASE***
-template<class T>
-class Central1D
-{
-    private:
-        DataStruct<T> &xj;
-        EulerFlux<T>  &flux_function;
-
-        DataStruct<T> f_rho, f_rho_u, f_rho_E;
-        DataStruct<T> RHS_rho, RHS_rho_u, RHS_rho_E;
-
-    public:
-        Central1D(DataStruct<T> &grid, EulerFlux<T> &flux);
-        ~Central1D(){};
-        void eval(const DataStruct<T> &rho, const DataStruct<T> &rho_u, const DataStruct<T> &rho_E);
-
-        DataStruct<T>& ref2RHS_rho() { return RHS_rho; };
-        DataStruct<T>& ref2RHS_rho_u() { return RHS_rho_u; };
-        DataStruct<T>& ref2RHS_rho_E() { return RHS_rho_E; };
-};
 
 
 
@@ -113,8 +93,12 @@ Central1D<T>::Central1D(DataStruct<T> &grid, EulerFlux<T> &flux) :
     // El cuerpo puede estar vacío, la inicialización se hace arriba
 }
 
-
-
+// --- IMPLEMENTACIÓN DEL DESTRUCTOR ---
+template<class T>
+Central1D<T>::~Central1D()
+{
+    // El cuerpo puede estar vacío, pero la función debe existir.
+}
 
 
 // *** IMPLEMENTACION DEL METODO EVAL***

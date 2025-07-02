@@ -60,9 +60,9 @@ int main(int narg, char **argv)
 
   // time solver
   // RungeKutta4<FLOATTYPE> rk(u); (Se resuelve para las 3 variables)
-  RungeKutta4<FLOATTYPE> rk(rho);
-  RungeKutta4<FLOATTYPE> rk(rho_U);
-  RungeKutta4<FLOATTYPE> rk(rho_E);
+  RungeKutta4<FLOATTYPE> rk_rho(rho);
+  RungeKutta4<FLOATTYPE> rk_rho_U(rho_U);
+  RungeKutta4<FLOATTYPE> rk_rho_E(rho_E);
 
   // Initial Condition
   FLOATTYPE *datax = xj.getData();
@@ -96,8 +96,8 @@ int main(int narg, char **argv)
   rho_init=rho;
 
   // Operator
-  // Central1D<FLOATTYPE> rhs(u,xj,lf); (Ahora se emplean todas las variables nuevas)
-  Central1D<FLOATTYPE> rhs(xj, ef, rho, rho_u, rho_E, f_rho, f_rho_u, f_rho_E);
+  // Central1D<FLOATTYPE> rhs(xj,ef); (Ahora se emplean todas las variables nuevas)
+  Central1D<FLOATTYPE> rhs(xj, ef);
 
 
   // FLOATTYPE CFL = 2.4; (Para Euler se recomienda CFL <1.0)
@@ -138,7 +138,7 @@ int main(int narg, char **argv)
 
       // Ui = *rk.currentU();
       rho_i = *rk_rho.currentU();
-      rho_U_i = *rk_rho_u.currentU();
+      rho_U_i = *rk_rho_U.currentU();
       rho_E_i = *rk_rho_E.currentU();
 
       // rhs.eval(Ui);
@@ -147,14 +147,14 @@ int main(int narg, char **argv)
 
       // rk.setFi(rhs.ref2RHS());
       rk_rho.setFi(rhs.ref2RHS_rho());
-      rk_rho_U.setFi(rhs.ref2RHS_rho_U());
+      rk_rho_U.setFi(rhs.ref2RHS_rho_u());
       rk_rho_E.setFi(rhs.ref2RHS_rho_E());
 
 
     }
     // rk.finalizeRK(dt);
     rk_rho.finalizeRK(dt);
-    rk_rho_u.finalizeRK(dt);
+    rk_rho_U.finalizeRK(dt);
     rk_rho_E.finalizeRK(dt);
 
 
@@ -165,7 +165,7 @@ int main(int narg, char **argv)
   compTime = MPI_Wtime() - compTime;
 
   // write2File(xj, u, "final.csv");
-  write2File(xj, rho, rho_U, rho_E, "final.csv")
+  write2File(xj, rho, rho_U, rho_E, "final.csv");
 
   // L2 norm
   //FLOATTYPE err = calcL2norm(Uinit, u);
@@ -173,7 +173,7 @@ int main(int narg, char **argv)
   std::cout << std::setprecision(4) << "Comp. time: " << compTime;
   //std::cout << " sec. Error: " << err/k;
   std::cout << " sec.L2 Error (rho): " << err;
-  std::cout << " kdx: " << k*datax[1]*2.*M_PI;
+  //std::cout << " kdx: " << k*datax[1]*2.*M_PI; CORRESPONDE AL PROBLEMA ORIGINAL
   std::cout << std::endl;
 
   return 0;
@@ -192,13 +192,13 @@ void write2File(DataStruct<FLOATTYPE> &X,
 {
   std::ofstream file;
   file.open(name,std::ios_base::trunc);
-  if(!file.is_open()) 
+  if(!file.is_open())
   {
     std::cout << "Couldn't open file for Initial Condition" << std::endl;
     exit(1);
   }
-  
-  for(int j = 0; j < U.getSize(); j++)
+
+  for(int j = 0; j < rho.getSize(); j++)
   {
     file << X.getData()[j] << " ," << rho.getData()[j] << " ," << rho_U.getData()[j] << " ," << rho_E.getData()[j] << std::endl;
   }

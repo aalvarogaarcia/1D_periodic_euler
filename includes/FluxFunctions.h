@@ -33,4 +33,18 @@ class LinearFlux : public FluxFunction<T>
     virtual T computeFlux(const T &Ui);
 };
 
+
+template<class T>
+class EulerFlux
+{
+private:
+    const T gamma;
+public:
+    EulerFlux(T g);
+    ~EulerFlux();
+    void computeFlux(const DataStruct<T> &rho, const DataStruct<T> &rho_U, const DataStruct<T> &rho_E,
+                     DataStruct<T> &f_rho, DataStruct<T> &f_rho_U, DataStruct<T> &f_rho_E);
+};
+
+
 #endif // _FLUX_FUNCTIONS

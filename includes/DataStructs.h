@@ -34,7 +34,8 @@ class DataStruct
     };
 
     // accessors
-    inline int getSize()
+    // inline int getSize()
+    inline int getSize() const
     {
       return size;
     }
@@ -44,6 +45,11 @@ class DataStruct
       return data;
     }
 
+
+    inline const T* getData() const
+    {
+        return data;
+    }
     inline T getData(int i)
     {
       return data[i];
