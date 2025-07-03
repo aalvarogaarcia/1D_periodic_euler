@@ -3,7 +3,7 @@
 
 template<class T>
 RungeKutta4<T>::RungeKutta4(DataStruct<T> &_Un):
-Un(_Un)
+Un(_Un), U_initial_step(_Un.getSize())
 {
   nSteps = 4;
   currentStep = 0;
@@ -47,6 +47,7 @@ template<class T>
 void RungeKutta4<T>::initRK()
 {
   currentStep = 0;
+  U_initial_step = Un;
 };
 
 template<class T>
@@ -57,7 +58,7 @@ void RungeKutta4<T>::stepUi(T dt)
   if(currentStep == 0)
   {
     T *dataUi = Ui.getData();
-    const T *dataU  = Un.getData();
+    const T *dataU  = U_initial_step.getData();
 
     for(int n = 0; n < Ui.getSize(); n++)
     {
@@ -80,7 +81,7 @@ void RungeKutta4<T>::stepUi(T dt)
 template<class T>
 void RungeKutta4<T>::finalizeRK(const T dt)
 {
-  T *dataUn = Un.getData();
+  //T *dataUn = Un.getData();
   T *dataUi = Ui.getData();
 
   // set Ui to 0
@@ -88,7 +89,7 @@ void RungeKutta4<T>::finalizeRK(const T dt)
   {
     dataUi[n] = 0.;
   }
-  
+
   for(int s = 0; s < nSteps; s++)
   {
     const T *dataFi = fi[s].getData();
@@ -99,12 +100,30 @@ void RungeKutta4<T>::finalizeRK(const T dt)
       dataUi[n] += b * dataFi[n];
     }
   }
-
+/*
   const T oneDiv6 = 1. / 6.;
   for(int n = 0; n < Ui.getSize(); n++)
   {
     dataUn[n] += dt * oneDiv6 * dataUi[n];
   }
+*/
+    const T oneDiv6 = 1. / 6.;
+
+    // Obtenemos los punteros que necesitamos:
+    // 1. Puntero a la solución final
+    T* data_U_final = Un.getData();
+    // 2. Puntero al estado que guardamos
+    const T* data_U_initial = U_initial_step.getData();
+    // 3. Puntero a la suma de flujos
+    const T* data_sum_Fi = Ui.getData();
+
+
+    for(int n = 0; n < Ui.getSize(); n++)
+    {
+       // Usamos "=" en lugar de "+="
+        data_U_final[n] = data_U_initial[n] + dt * oneDiv6 * data_sum_Fi[n];
+    }
+
 };
 
 template<class T>

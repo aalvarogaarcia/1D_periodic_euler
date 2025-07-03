@@ -33,6 +33,9 @@ class RungeKutta4
     // intermediate solution
     DataStruct<T> Ui;
 
+    //Initial step
+    DataStruct<T>U_initial_step;
+
     // RHS 
     DataStruct<T> *fi;
 

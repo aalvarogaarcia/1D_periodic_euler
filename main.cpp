@@ -71,7 +71,8 @@ int main(int narg, char **argv)
   FLOATTYPE *dataRho_U = rho_U.getData();
   FLOATTYPE *dataRho_E = rho_E.getData();
 
-  const FLOATTYPE p_init=1.0; // Presion inicial
+//	--- CONDICIONES INICIALES ESTATICAS ---
+  const FLOATTYPE p_init=1.8; // Presion inicial
   for(int j = 0; j < numPoints; j++)
   {
     // xj
@@ -84,16 +85,43 @@ int main(int narg, char **argv)
     dataRho[j]=1.0+0.2*exp(-(datax[j]-0.5)*(datax[j]-0.5)/0.01);
 
     // Fluido en reposo
-    dataRho_U[j] = 0.0;
+    dataRho_U[j] = 0.2;
 
     // Energia de un fluido en reposo
     dataRho_E[j] = p_init/(gamma-1.0);
 }
+/*
+
+//	--- CONDICIONES INICIALES DE CHOQUE ---
+
+for (int j = 0; j < numPoints; j++)
+{
+    datax[j] = static_cast<FLOATTYPE>(j) / static_cast<FLOATTYPE>(numPoints - 1);
+
+    if (datax[j] < 0.5) { // Estado izquierdo (alta presión)
+        FLOATTYPE rho_left = 1.0;
+        FLOATTYPE p_left = 1.0;
+        FLOATTYPE u_left = 0.0;
+
+        dataRho[j] = rho_left;
+        dataRho_U[j] = rho_left * u_left;
+        dataRho_E[j] = p_left / (gamma - 1.0) + 0.5 * rho_left * u_left * u_left;
+    } else { // Estado derecho (baja presión)
+        FLOATTYPE rho_right = 0.125;
+        FLOATTYPE p_right = 0.1;
+        FLOATTYPE u_right = 0.0;
+
+        dataRho[j] = rho_right;
+        dataRho_U[j] = rho_right * u_right;
+        dataRho_E[j] = p_right / (gamma - 1.0) + 0.5 * rho_right * u_right * u_right;
+    }
+}
+*/
 
   //DataStruct<FLOATTYPE> Uinit;
   //Uinit = u;  (Manejamos Rho)
-  DataStruct <FLOATTYPE> rho_init;
-  rho_init=rho;
+  DataStruct <FLOATTYPE> rho_init(numPoints);
+  rho_init = rho;
 
   // Operator
   // Central1D<FLOATTYPE> rhs(xj,ef); (Ahora se emplean todas las variables nuevas)
@@ -160,7 +188,9 @@ int main(int narg, char **argv)
 
     time += dt;
   }
-
+if (numPoints > 0) {
+    std::cout << "Time: " << time << ", Rho at center: " << rho.getData()[numPoints / 2] << std::endl;
+}
   // finishe timer
   compTime = MPI_Wtime() - compTime;
 
@@ -177,6 +207,7 @@ int main(int narg, char **argv)
   std::cout << std::endl;
 
   return 0;
+
 }
 
 
