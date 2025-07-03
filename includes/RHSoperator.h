@@ -58,16 +58,21 @@ class Central1D
 private:
     DataStruct<T> &xj;
     EulerFlux<T>  &flux_function;
-    DataStruct<T> f_rho, f_rho_u, f_rho_E;
-    DataStruct<T> RHS_rho, RHS_rho_u, RHS_rho_E;
-
+//    DataStruct<T> f_rho, f_rho_u, f_rho_E;
+    DataStruct<T> F_internal;
+//    DataStruct<T> RHS_rho, RHS_rho_u, RHS_rho_E;
+    DataStruct <T> RHS;
 public:
     Central1D(DataStruct<T> &grid, EulerFlux<T> &flux);
     ~Central1D();
-    void eval(const DataStruct<T> &rho, const DataStruct<T> &rho_u, const DataStruct<T> &rho_E);
-    DataStruct<T>& ref2RHS_rho() { return RHS_rho; }
-    DataStruct<T>& ref2RHS_rho_u() { return RHS_rho_u; }
-    DataStruct<T>& ref2RHS_rho_E() { return RHS_rho_E; }
+//    void eval(const DataStruct<T> &rho, const DataStruct<T> &rho_u, const DataStruct<T> &rho_E);
+    void eval(const DataStruct<T> &U_in);
+
+//    DataStruct<T>& ref2RHS_rho() { return RHS_rho; }
+//    DataStruct<T>& ref2RHS_rho_u() { return RHS_rho_u; }
+//    DataStruct<T>& ref2RHS_rho_E() { return RHS_rho_E; }
+      DataStruct<T>& ref2RHS() { return RHS; }
+
 };
 
 

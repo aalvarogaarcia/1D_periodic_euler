@@ -85,10 +85,12 @@ DataStruct<T>& Central1D<T>::ref2RHS()
 
 // ***IMPLEMENTACION DEL CONSTRUCTOR***
 template<class T>
-Central1D<T>::Central1D(DataStruct<T> &grid, EulerFlux<T> &flux) : 
+Central1D<T>::Central1D(DataStruct<T> &grid, EulerFlux<T> &flux) :
     xj(grid), flux_function(flux),
-    f_rho(grid.getSize()), f_rho_u(grid.getSize()), f_rho_E(grid.getSize()),
-    RHS_rho(grid.getSize()), RHS_rho_u(grid.getSize()), RHS_rho_E(grid.getSize())
+    F_internal(grid.getSize()*3),
+    RHS(grid.getSize()*3)
+//    f_rho(grid.getSize()), f_rho_u(grid.getSize()), f_rho_E(grid.getSize()),
+//    RHS_rho(grid.getSize()), RHS_rho_u(grid.getSize()), RHS_rho_E(grid.getSize())
 {
     // El cuerpo puede estar vacío, la inicialización se hace arriba
 }
@@ -103,6 +105,39 @@ Central1D<T>::~Central1D()
 
 // *** IMPLEMENTACION DEL METODO EVAL***
 
+template<class T>
+void Central1D<T>::eval(const DataStruct<T>& U_in)
+{
+    int numPoints = xj.getSize();
+    T dx = xj.getData()[1] - xj.getData()[0];
+
+
+    flux_function.computeFlux(U_in, F_internal);
+
+    const T* F_data = F_internal.getData();
+    T* RHS_data = RHS.getData();
+
+
+    for(int i = 1; i < numPoints - 1; i++)
+    {
+        for (int var = 0; var < 3; ++var) // Bucle para rho, rho_u, rho_E
+        {
+            int idx_i   = i * 3 + var;
+            int idx_im1 = (i - 1) * 3 + var;
+            int idx_ip1 = (i + 1) * 3 + var;
+            RHS_data[idx_i] = -(F_data[idx_ip1] - F_data[idx_im1]) / (2.0 * dx);
+        }
+    }
+
+
+    for (int var = 0; var < 3; ++var) {
+        RHS_data[0 * 3 + var] = 0;
+        RHS_data[(numPoints - 1) * 3 + var] = 0;
+    }
+}
+
+
+/*
 template<class T>
 void Central1D<T>::eval(const DataStruct<T> &rho, const DataStruct<T> &rho_u, const DataStruct<T> &rho_E)
 {
@@ -138,7 +173,7 @@ void Central1D<T>::eval(const DataStruct<T> &rho, const DataStruct<T> &rho_u, co
     R2[size-1] = -(F2[0] - F2[size-2]) / (2.0 * dx);
     R3[size-1] = -(F3[0] - F3[size-2]) / (2.0 * dx);
 }
-
+*/
 
 
 
